@@ -1,0 +1,172 @@
+use base
+
+square : Nat -> Nat
+square x = x * x
+
+use test
+
+test> square.tests.ex1 = check (square 4 == 16)
+
+test> square.tests.prop1 =
+  go _ = a = !gen.nat
+         b = !gen.nat
+         expect (square a * square b == square (a * b))
+  runs 100 go
+
+use base.data
+use base.time
+
+unique type Recurrence = Daily | Weekly
+
+unique type Task = {
+  description: Text,
+  recurrence: Optional Recurrence
+}
+
+unique type TaskStatus = {
+  task: Task,
+  deletedAt: Optional OffsetDateTime,
+  completedAt: Optional OffsetDateTime
+}
+
+unique type TaskStatuses = List TaskStatus
+
+unique type ListOutstandingAction = ListOutstandingAction
+
+unique type AddTaskAction = {
+  task: Task,
+  timestamp: Optional OffsetDateTime
+}
+
+unique type CompleteTaskAction = {
+  index: Int,
+  timestamp: OffsetDateTime
+}
+
+unique type DeleteTaskAction = {
+  index: Int,
+  timestamp: OffsetDateTime
+}
+
+unique type CalendarCompletedTaskAction = {
+  index: Int,
+  timestamp: OffsetDateTime
+}
+
+unique type FleetingNote = {
+  contents: Text,
+  tags: Set Text
+}
+
+unique type BookReference = {
+  title: Text,
+  page: Int
+}
+
+unique type URLReference = {
+  url: Text
+}
+
+unique type NoteReference =
+  NoteBookReference BookReference
+  | NoteURLReference URLReference
+
+unique type LiteratureNote = {
+  references: NoteReference,
+  contents: Text,
+  tags: Set Text
+}
+
+unique type PermanentNote = {
+  title: Text,
+  contents: Text,
+  tags: Set Text
+}
+
+unique type Note
+  = Fleeting FleetingNote
+  | Literature LiteratureNote
+  | Permanent PermanentNote
+
+thing: Note
+thing = Permanent (PermanentNote "Cake" "Cake Is Nice" Set.empty)
+
+unique type Connection = {
+  connectFrom: Int,
+  connectTo: Int
+}
+
+unique type AppEntry
+  = TaskEntry TaskStatus
+  | NoteEntry Note
+  | ConnectionEntry Connection
+
+unique type AppEntries = List (AppEntry, Optional OffsetDateTime)
+
+unique type AddNoteAction = {
+  note: Note,
+  templateNoteID: Optional Int,
+  timestamp: OffsetDateTime
+}
+
+unique type FleetingNoteFilter = {
+  searchTerms: List Text,
+  tags: Set Text
+}
+
+unique type LiteratureNoteFilter = {
+  searchTerms: List Text,
+  tags: Set Text
+}
+
+unique type PermanentNoteFilter = {
+  searchTerms: List Text,
+  tags: Set Text
+}
+
+unique type AllNoteFilter = {
+  searchTerms: List Text,
+  tags: Set Text
+}
+
+unique type NoteFilter
+  = FleetingFilter FleetingNoteFilter
+  | LiteratureFilter LiteratureNoteFilter
+  | PermanentFilter PermanentNoteFilter
+  | AllFilter AllNoteFilter
+
+unique type ListNoteAction = {
+  noteFilter: NoteFilter
+}
+
+unique type AddConnectionAction = {
+  connection: Connection
+}
+
+unique type UpdateNoteContentsAction = {
+  originalNoteID: Int,
+  updatedNoteContents: Text,
+  timestamp: OffsetDateTime
+}
+
+unique type AddTagsAction = {
+  originalNoteID: Int,
+  tags: Set Text,
+  timestamp: OffsetDateTime
+}
+
+unique type TaskAction
+  = ListOutstanding ListOutstandingAction
+  | AddTask AddTaskAction
+  | CompleteTask CompleteTaskAction
+  | DeleteTask DeleteTaskAction
+  | CalendarCompletedTask CalendarCompletedTaskAction
+  | AddNote AddNoteAction
+  | ListNote ListNoteAction
+  | AddConnection AddConnectionAction
+  | UpdateNoteContents UpdateNoteContentsAction
+  | AddTags AddTagsAction
+
+unique type TaskActions = List TaskAction
+
+
